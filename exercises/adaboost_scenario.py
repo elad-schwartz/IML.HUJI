@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Tuple
-from IMLearn.learners.metalearners.adaboost import AdaBoost
+#TODO: Have changed this
+from IMLearn.metalearners.adaboost import AdaBoost
 from IMLearn.learners.classifiers import DecisionStump
 from utils import *
 import plotly.graph_objects as go
@@ -60,6 +61,7 @@ if __name__ == '__main__':
     # TODO: Come back and remove comments
     # np.random.seed(0)
     # raise NotImplementedError()
-    X, y = generate_data()
+    X, y = generate_data(100,0)
     a = DecisionStump()
-    x = 5
+    b = X[:,0]
+    a.fit(X,y)

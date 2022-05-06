@@ -1,5 +1,6 @@
 import numpy as np
-from ...base import BaseEstimator
+# TODO: I've changed this as well
+from ..base import BaseEstimator
 from typing import Callable, NoReturn
 
 
