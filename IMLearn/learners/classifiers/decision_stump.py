@@ -95,7 +95,8 @@ class DecisionStump(BaseEstimator):
         For every tested threshold, values strictly below threshold are predicted as `-sign` whereas values
         which equal to or above the threshold are predicted as `sign`
         """
-        raise NotImplementedError()
+        sorted_index = np.argsort(values)
+        x = 5
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -114,4 +115,7 @@ class DecisionStump(BaseEstimator):
         loss : float
             Performance under missclassification loss function
         """
-        raise NotImplementedError()
+        # TODO: Can we just use the inherited one?
+        from ...metrics import misclassification_error
+        predictions = self.predict(X)
+        return misclassification_error(y, predictions)
