@@ -63,7 +63,6 @@ class AdaBoost(BaseEstimator):
             self.D = self.D / np.sum(self.D)
             # TODO: Remove
             print(f"Done with iteration {i}")
-        x = 5 #TODO: Remove
 
     def _predict(self, X):
         """

@@ -43,19 +43,14 @@ class DecisionStump(BaseEstimator):
 
         # Set fitted = True to allow us to import the loss function
         self.fitted_ = True
-        self.sign_ = 1
-        num_of_features = X.shape[1]
 
         # Calculate the minimum loss for each feature
-        # The losses is a matrix who's rows are the features and where column1 is the
-        # threshold with the smallest loss and column2 is the loss for this threshold
-        losses = np.empty((num_of_features, 2))
-        for f in range(num_of_features):
-            losses[f, :] = self._find_threshold(X[:, f], y, self.sign_)
-
-        # Select feature and threshold based on the loss matrix above
-        self.j = np.argmin(losses[:, 1])
-        self.threshold_ = losses[self.j][0]
+        curr_loss = np.inf
+        for sign, f in product([-1, 1], range(X.shape[1])):
+            threshold, loss = self._find_threshold(X[:, f], y, sign)
+            if loss < curr_loss:
+                curr_loss = loss
+                self.sign_, self.j, self.threshold_ = sign, f, threshold
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
