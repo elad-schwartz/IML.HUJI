@@ -66,9 +66,6 @@ class DecisionStump(BaseEstimator):
         X : ndarray of shape (n_samples, n_features)
             Input data to predict responses for
 
-        y : ndarray of shape (n_samples, )
-            Responses of input data to fit to
-
         Returns
         -------
         responses : ndarray of shape (n_samples, )
@@ -79,7 +76,7 @@ class DecisionStump(BaseEstimator):
         Feature values strictly below threshold are predicted as `-sign` whereas values which equal
         to or above the threshold are predicted as `sign`
         """
-        self.fit()
+        return np.array([-self.sign_ if X[i][self.j] < self.threshold_ else self.sign_ for i in range(X.shape[0])])
 
     def _find_threshold(self, values: np.ndarray, labels: np.ndarray, sign: int) -> Tuple[float, float]:
         """
@@ -116,10 +113,10 @@ class DecisionStump(BaseEstimator):
         sorted_values, sorted_labels = values[sorted_index], labels[sorted_index]
         losses = np.empty(number_of_samples)
         for i in range(number_of_samples):
-            threshold_prediction = ([-sign] * i) + ([sign] * (sorted_values.shape[0] - i))
-            losses[i] = self.loss(sorted_labels, np.array(threshold_prediction))
+            threshold_prediction = ([-sign] * i) + ([sign] * (number_of_samples - i))
+            losses[i] = self.loss(np.array(threshold_prediction), sorted_labels)
         the_loss_argmin = np.argmin(losses)
-        return values[sorted_index[np.argmin(losses)]], losses[the_loss_argmin]
+        return sorted_values[the_loss_argmin], losses[the_loss_argmin]
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -138,5 +135,5 @@ class DecisionStump(BaseEstimator):
         loss : float
             Performance under missclassification loss function
         """
-        from ...metrics import misclassification_error
-        return misclassification_error(y, X)
+        misclassified_indexes = np.sign(X) - np.sign(y)
+        return float(np.sum(np.abs(y[misclassified_indexes != 0])))
