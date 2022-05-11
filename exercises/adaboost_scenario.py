@@ -41,6 +41,13 @@ def generate_data(n: int, noise_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
     return X, y
 
 
+def get_marker_shapes_list(test_y: np.ndarray):
+    '''
+    Helper function for styling markers in scatter plots
+    '''
+    return ['circle' if test_y[i] == -1 else 'x' for i in range(test_y.shape[0])]
+
+
 def Q1_plot(training_losses: [int], testing_losses: [int]):
     '''
     Plots the classification loss as a function on adaboost ensemble size
@@ -79,7 +86,8 @@ def Q2_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, test_y: np.ndarra
                 marker=dict(
                     size=15,
                     color=test_y,
-                    line_width=5,
+                    symbol=get_marker_shapes_list(test_y),
+                    line_width=2,
                     line_color='black'
                 )
             ), col=traces[i][0], row=traces[i][1])
@@ -91,7 +99,10 @@ def Q2_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, test_y: np.ndarra
 
     fig.update_layout(
         title={
-            'text': 'Decision Boundaries of Adaboost ensembles'
+            'text': 'Decision Boundaries of Adaboost ensembles',
+            'x': 0.5,
+            'y': 0.99,
+            'font': {'size': 20, 'color': 'blue'}
         },
         showlegend=False
     )
@@ -113,7 +124,8 @@ def Q3_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, testing_losses: [
         marker=dict(
             size=15,
             color=test_y,
-            line_width=5,
+            symbol=get_marker_shapes_list(test_y),
+            line_width=2,
             line_color='black'
         )
     ))
@@ -146,6 +158,7 @@ def Q4_plot(adaboost_classifier: AdaBoost, train_X: np.ndarray, train_y: np.ndar
             marker=dict(
                 size=normalized_list,
                 color=train_y,
+                symbol=get_marker_shapes_list(train_y),
                 line_width=5,
                 line_color='black'
             )
