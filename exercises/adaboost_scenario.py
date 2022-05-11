@@ -41,6 +41,18 @@ def generate_data(n: int, noise_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
     return X, y
 
 
+def return_title(text: str):
+    '''
+    Returns title with global config with given text
+    '''
+    return {
+        'text': text,
+        'x': 0.5,
+        'y': 0.99,
+        'font': {'size': 35}
+    }
+
+
 def get_marker_shapes_list(test_y: np.ndarray):
     '''
     Helper function for styling markers in scatter plots
@@ -59,9 +71,7 @@ def Q1_plot(training_losses: [int], testing_losses: [int]):
     fig.add_trace(go.Scatter(x=[i for i in range(1, 251)], y=testing_losses, name="test errors"))
 
     fig.update_layout(
-        title={
-            "text": "Classification loss as a function of ensemble size"
-        },
+        title=return_title("Classification loss as a function of ensemble size"),
         xaxis_title="Adaboost iterations",
         yaxis_title="Classification Error for iteration"
     )
@@ -97,15 +107,7 @@ def Q2_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, test_y: np.ndarra
         fig.add_trace(decision_surface(partial_predict, lims[0], lims[1], showscale=False),
                       col=traces[i][0], row=traces[i][1])
 
-    fig.update_layout(
-        title={
-            'text': 'Decision Boundaries of Adaboost ensembles',
-            'x': 0.5,
-            'y': 0.99,
-            'font': {'size': 20, 'color': 'blue'}
-        },
-        showlegend=False
-    )
+    fig.update_layout(title=return_title('Decision Boundaries of Adaboost ensembles'),showlegend=False)
     fig.show()
 
 
@@ -132,9 +134,8 @@ def Q3_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, testing_losses: [
     partial_predict = lambda test_data: adaboost_classifier.partial_predict(test_data, 238)
     fig.add_trace(decision_surface(partial_predict, lims[0], lims[1], showscale=False))
     fig.update_layout(
-        title={
-            'text': f'Decision boundary ensemble of size {best_performing_ensemble + 1} with accuracy {accuracy}'
-        }
+        title=return_title(f'Decision boundary ensemble of size {best_performing_ensemble + 1} '
+                           f'with accuracy {accuracy}')
     )
     fig.show()
 
@@ -166,9 +167,7 @@ def Q4_plot(adaboost_classifier: AdaBoost, train_X: np.ndarray, train_y: np.ndar
     )
     fig.add_trace(decision_surface(adaboost_classifier.predict, lims[0], lims[1], showscale=False))
     fig.update_layout(
-        title={
-            'text': 'Plot with weighted training samples'
-        }
+        title=return_title('Plot with weighted training samples')
     )
     fig.show()
 
