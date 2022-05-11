@@ -40,17 +40,13 @@ class DecisionStump(BaseEstimator):
         y : ndarray of shape (n_samples, )
             Responses of input data to fit to
         """
-
-        # Set fitted = True to allow us to import the loss function
-        self.fitted_ = True
-
-        # Calculate the minimum loss for each feature
         curr_loss = np.inf
         for sign, f in product([-1, 1], range(X.shape[1])):
             threshold, loss = self._find_threshold(X[:, f], y, sign)
             if loss < curr_loss:
                 curr_loss = loss
                 self.sign_, self.j, self.threshold_ = sign, f, threshold
+
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -103,15 +99,17 @@ class DecisionStump(BaseEstimator):
         For every tested threshold, values strictly below threshold are predicted as `-sign` whereas values
         which equal to or above the threshold are predicted as `sign`
         """
-        number_of_samples = labels.shape[0]
+        # First sort the features and labels by feature
         sorted_index = np.argsort(values)
         sorted_values, sorted_labels = values[sorted_index], labels[sorted_index]
-        losses = np.empty(number_of_samples)
-        for i in range(number_of_samples):
-            threshold_prediction = ([-sign] * i) + ([sign] * (number_of_samples - i))
-            losses[i] = self.loss(np.array(threshold_prediction), sorted_labels)
-        the_loss_argmin = np.argmin(losses)
-        return sorted_values[the_loss_argmin], losses[the_loss_argmin]
+
+        # Finding the minimal loss and its corresponding threshold
+        single_class_loss = np.sum(np.abs(sorted_labels[np.sign(sorted_labels) != sign]))
+        losses_per_index = single_class_loss + np.cumsum(sorted_labels * sign)[:-1]
+        all_index_losses = np.append(single_class_loss, losses_per_index)
+        loss_argmin = np.argmin(all_index_losses)
+        return sorted_values[loss_argmin], all_index_losses[loss_argmin]
+
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -130,5 +128,6 @@ class DecisionStump(BaseEstimator):
         loss : float
             Performance under missclassification loss function
         """
-        misclassified_indexes = np.sign(X) - np.sign(y)
-        return float(np.sum(np.abs(y[misclassified_indexes != 0])))
+        from ...metrics.loss_functions import misclassification_error
+        predictions = self.predict(X)
+        return misclassification_error(y, predictions)

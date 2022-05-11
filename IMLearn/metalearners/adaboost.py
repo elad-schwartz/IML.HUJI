@@ -1,5 +1,4 @@
 import numpy as np
-# TODO: I've changed this as well
 from ..base import BaseEstimator
 from typing import Callable, NoReturn
 
@@ -49,6 +48,7 @@ class AdaBoost(BaseEstimator):
         y : ndarray of shape (n_samples, )
             Responses of input data to fit to
         """
+        # Fit using the algorithm shown in class
         self.D = np.array([1 / y.shape[0]] * y.shape[0])
         self.models_ = [None] * self.iterations_
         self.weights_ = [None] * self.iterations_
@@ -57,12 +57,10 @@ class AdaBoost(BaseEstimator):
             self.models_[i] = self.wl_()
             self.models_[i].fit(X, weighted_y)
             prediction = self.models_[i].predict(X)
-            epsilon_i = self.models_[i].loss(prediction, weighted_y)
+            epsilon_i = np.sum(self.D[y != prediction])
             self.weights_[i] = (1 / 2) * np.log((1 / epsilon_i) - 1)
             self.D = self.D * np.exp(-y * self.weights_[i] * prediction)
             self.D = self.D / np.sum(self.D)
-            # TODO: Remove
-            print(f"Done with iteration {i}")
 
     def _predict(self, X):
         """
@@ -78,7 +76,7 @@ class AdaBoost(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        self.partial_predict(X, self.iterations_)
+        return self.partial_predict(X, self.iterations_)
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -97,7 +95,7 @@ class AdaBoost(BaseEstimator):
         loss : float
             Performance under missclassification loss function
         """
-        self.partial_loss(X, y, self.iterations_)
+        return self.partial_loss(X, y, self.iterations_)
 
     def partial_predict(self, X: np.ndarray, T: int) -> np.ndarray:
         """
@@ -142,5 +140,5 @@ class AdaBoost(BaseEstimator):
             Performance under missclassification loss function
         """
         from ..metrics.loss_functions import misclassification_error
-        predictions = self.partial_predict(X, T + 1)  # TODO: Could this be wrong?
+        predictions = self.partial_predict(X, T + 1)
         return misclassification_error(y, predictions)
