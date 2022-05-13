@@ -83,7 +83,7 @@ def Q2_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, test_y: np.ndarra
     Creates subplots of the dataset and decision boundaries for a list of adaboost ensembles of increasing size
     """
     T = [5, 50, 100, 250]
-    traces = [(1, 1), (1, 2), (2, 1), (2, 2)]
+    traces = [(1, 1), (1, 2), (2, 1), (2, 2)] # Used to place the subplots
 
     fig = make_subplots(rows=2, cols=2, subplot_titles=[f"Decision boundary for {t}" for t in T])
 
@@ -134,7 +134,7 @@ def Q3_plot(adaboost_classifier: AdaBoost, test_X: np.ndarray, testing_losses: [
     partial_predict = lambda test_data: adaboost_classifier.partial_predict(test_data, 238)
     fig.add_trace(decision_surface(partial_predict, lims[0], lims[1], showscale=False))
     fig.update_layout(
-        title=return_title(f'Decision boundary ensemble of size {best_performing_ensemble + 1} '
+        title=return_title(f'Decision boundary ensemble of size 238 '
                            f'with accuracy {accuracy}')
     )
     fig.show()
@@ -146,6 +146,7 @@ def Q4_plot(adaboost_classifier: AdaBoost, train_X: np.ndarray, train_y: np.ndar
     algorithm
     '''
     max_D_t = np.max(adaboost_classifier.D)
+
     # I have chosen to multiply by 20 to increase graph visibility whilst still maintaining the marker
     # sizes proportional to their weight in the final iteration
     normalized_list = (adaboost_classifier.D / max_D_t) * 20
